@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Servicio de la aplicación (Servidor/Backend)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ddys_app
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=ddys_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres_pass
+    depends_on:
+      - db
+    restart: always
+
+  # Servicio de la Base de Datos
+  db:
+    image: postgres:15-alpine
+    container_name: ddys_db
+    environment:
+      POSTGRES_DB: ddys_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+
+# Persistencia de datos (volumen para que la base de datos no pierda información si se apaga el contenedor)
+volumes:
+  db_data:
